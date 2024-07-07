@@ -39,15 +39,16 @@ router.delete("/:id", verifyTokenAndAdmin, async (req, res) => {
 });
 
 // //GET USER ORDERS
-router.get("/find/:userId", verifyTokenAuthorization, async (req, res) => {
+router.get("/find/:id", verifyTokenAuthorization, async (req, res) => {
     try{
-        const orders = await Order.findOne({userId: req.params.userId});
+        const orders = await Order.find({userId: req.params.id});
         res.status(200).json(orders);
     }catch(err){
         res.status(500).json(err);
     }
 })
 
+// GET ORDERS WITH ORDERID
 router.get("/getOrder/:orderId", verifyTokenAuthorization, async (req, res) => {
     try{
         const orders = await Order.findOne({_id: req.params.orderId});
@@ -64,6 +65,18 @@ router.get("/", verifyTokenAndAdmin, async(req,res) => {
         const orders = await Order.find();
         res.status(200).json(orders);
     }catch(err){
+        res.status(500).json(err)
+    }
+});
+
+//GET LATEST TRANSACTIONS
+
+router.get("/transactions", verifyTokenAndAdmin, async(req,res) => {
+    try{
+        const orders = await Order.find().sort({createdAt:-1});
+        res.status(200).json(orders);
+    }catch(err){
+        console.log(err)
         res.status(500).json(err)
     }
 });
@@ -93,8 +106,10 @@ router.get("/income", verifyTokenAndAdmin, async(req,res) => {
                 
             }, {
                 $sort: {
-                    _id: 1
+                    _id: -1
                 }
+            }, {
+                $limit: 2
             }
         ])
         res.status(200).json(income);

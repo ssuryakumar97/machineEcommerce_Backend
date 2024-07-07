@@ -34,7 +34,7 @@ router.get("/find/:id", verifyTokenAndAdmin, async (req, res) => {
     try{
         console.log(req.params.id)
         const user = await User.findById(req.params.id);
-        console.log(user)
+        // console.log(user)
         const {password, ...others} = user._doc;
         res.status(200).json(others);
     }catch(err){
@@ -74,6 +74,10 @@ router.get("/stats", verifyTokenAndAdmin, async(req,res) =>{
                 _id: "$month",
                 total: { $sum: 1},
                } 
+            },{
+                $sort:{
+                    _id: 1
+                }
             }
         ])
         res.status(200).send(data);
